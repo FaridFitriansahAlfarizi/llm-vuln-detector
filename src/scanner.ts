@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import { analyzeWithLLM } from './llm';
-import { showWarning } from './highlight';
+import {
+  showWarning,
+  highlightVulnerableFunctions
+} from './highlight';
 
 export async function scanCode() {
 
@@ -30,6 +33,7 @@ export async function scanCode() {
 
         // tampilkan popup sederhana
         showWarning(llmResult);
+        highlightVulnerableFunctions(editor, code, llmResult);
 
     } catch (error) {
         output.appendLine("ERROR:");
