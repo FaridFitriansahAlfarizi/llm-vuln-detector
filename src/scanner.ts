@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { analyzeWithLLM } from './llm';
-import { calculateSimilarity } from './similarity';
 import { showWarning } from './highlight';
 
 export async function scanCode() {
@@ -16,12 +15,25 @@ export async function scanCode() {
 
     vscode.window.showInformationMessage("Scanning vulnerability...");
 
-    // call LLM
-    const llmResult = await analyzeWithLLM(code);
+    const output = vscode.window.createOutputChannel("LLM Vuln Detector");
+    output.clear();
+    output.show(true);
 
-    // similarity
-    const result = calculateSimilarity(llmResult);
+    try {
+        // call LLM
+        const llmResult = await analyzeWithLLM(code);
 
-    // show result
-    showWarning(result);
+        // tampilkan raw output
+        output.appendLine("===== LLM RESULT =====");
+        output.appendLine(llmResult);
+        output.appendLine("======================");
+
+        // tampilkan popup sederhana
+        showWarning(llmResult);
+
+    } catch (error) {
+        output.appendLine("ERROR:");
+        output.appendLine(String(error));
+        vscode.window.showErrorMessage("Scan failed.");
+    }
 }

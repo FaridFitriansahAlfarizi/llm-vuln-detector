@@ -1,16 +1,14 @@
 import * as vscode from 'vscode';
 
-export function showWarning(result: any) {
+export function showWarning(result: string) {
 
-    const output = vscode.window.createOutputChannel("LLM Vulnerability");
-
-    output.clear();
-    output.show(true);
-
-    output.appendLine("⚠ SQL Injection Detected");
-    output.appendLine("----------------------------");
-    output.appendLine(`Source : ${result.source}`);
-    output.appendLine(`Sink   : ${result.sink}`);
-    output.appendLine(`Score  : ${result.score}`);
-    output.appendLine(`Status : Vulnerable`);
+    if (result.includes("Answer: Vulnerable")) {
+        vscode.window.showWarningMessage(
+            "⚠ SQL Injection Vulnerability Detected"
+        );
+    } else {
+        vscode.window.showInformationMessage(
+            "✅ No SQL Injection Vulnerability Detected"
+        );
+    }
 }
