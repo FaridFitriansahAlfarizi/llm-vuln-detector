@@ -1,19 +1,12 @@
 import * as vscode from 'vscode';
-
 import { analyzeWithLLM } from './llm';
-
 import {
     showWarning,
     highlightVulnerableFunctions
 } from './highlight';
+import { updateDiagnostics } from './diagnostic';
 
-import {
-    VulnerabilityCodeLensProvider
-} from './codelens';
-
-export async function scanCode(
-    codeLensProvider: VulnerabilityCodeLensProvider
-) {
+export async function scanCode() {
 
     const editor = vscode.window.activeTextEditor;
 
@@ -35,34 +28,15 @@ export async function scanCode(
     console.log(llmResult);
     console.log("======================");
 
-    // =========================
-    // PARSE RESULT FOR CODELENS
-    // =========================
-
-    const vulnerabilities = [];
-
-    const regex =
-        /Function:\s*(\w+)[\s\S]*?Answer:\s*(Vulnerable|Not Vulnerable)/g;
-
-    let match;
-
-    while ((match = regex.exec(llmResult)) !== null) {
-
-        vulnerabilities.push({
-            functionName: match[1],
-            vulnerable:
-                match[2] === "Vulnerable"
-        });
-    }
-
-    // update codelens
-    codeLensProvider.update(vulnerabilities);
-
-    // =========================
-
     showWarning(llmResult);
 
     highlightVulnerableFunctions(
+        editor,
+        code,
+        llmResult
+    );
+
+    updateDiagnostics(
         editor,
         code,
         llmResult
