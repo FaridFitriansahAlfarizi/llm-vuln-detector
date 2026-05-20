@@ -6,6 +6,11 @@ import {
 } from './highlight';
 import { updateDiagnostics } from './diagnostic';
 
+const outputChannel =
+    vscode.window.createOutputChannel(
+        "LLM Vulnerability Detector"
+    );
+
 export async function scanCode() {
 
     const editor = vscode.window.activeTextEditor;
@@ -24,9 +29,19 @@ export async function scanCode() {
     // call LLM
     const llmResult = await analyzeWithLLM(code);
 
-    console.log("\n===== LLM RESULT =====");
-    console.log(llmResult);
-    console.log("======================");
+    outputChannel.clear();
+
+    outputChannel.appendLine(
+        "===== LLM RESULT ====="
+    );
+
+    outputChannel.appendLine(llmResult);
+
+    outputChannel.appendLine(
+        "======================"
+    );
+
+    outputChannel.show(true);
 
     showWarning(llmResult);
 
