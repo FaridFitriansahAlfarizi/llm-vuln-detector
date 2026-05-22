@@ -6,11 +6,11 @@ export function showWarning(result: string) {
 
     if (vulnerableCount > 0) {
         vscode.window.showWarningMessage(
-            `⚠ ${vulnerableCount} SQL Injection Vulnerability Detected`
+            `${vulnerableCount} SQL Injection Vulnerability Detected`
         );
     } else {
         vscode.window.showInformationMessage(
-            "✅ No SQL Injection Vulnerability Detected"
+            "No SQL Injection Vulnerability Detected ✅"
         );
     }
 }

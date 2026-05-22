@@ -47,10 +47,17 @@ export function updateDiagnostics(
         const range =
             new vscode.Range(startPos, endPos);
 
+        const fullMessage =
+`SQL Injection Vulnerability Detected
+Function : ${functionName}
+• ${extractBadSource(llmResult, functionName)}
+• ${extractBadSink(llmResult, functionName)}
+• Answer: Vulnerable`;
+
         const diagnostic =
             new vscode.Diagnostic(
                 range,
-                `SQL Injection detected in function: ${functionName}`,
+                fullMessage,
                 vscode.DiagnosticSeverity.Warning
             );
 
@@ -64,4 +71,35 @@ export function updateDiagnostics(
         editor.document.uri,
         diagnostics
     );
+}
+
+function extractBadSource(
+    llmResult: string,
+    functionName: string
+): string {
+
+    const regex = new RegExp(
+        `Function:\\s*${functionName}[\\s\\S]*?1\\.\\s*(.*?)\\n`,
+        "m"
+    );
+
+    const match = regex.exec(llmResult);
+
+    return match ? match[1] : "BadSource: Unknown";
+}
+
+
+function extractBadSink(
+    llmResult: string,
+    functionName: string
+): string {
+
+    const regex = new RegExp(
+        `Function:\\s*${functionName}[\\s\\S]*?2\\.\\s*(.*?)\\n`,
+        "m"
+    );
+
+    const match = regex.exec(llmResult);
+
+    return match ? match[1] : "BadSink: Unknown";
 }
